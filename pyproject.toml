@@ -1,0 +1,27 @@
+[project]
+name = "uninet"
+version = "0.1.0"
+description = "Uninet backend API service"
+readme = "README.md"
+authors = [
+    { name = "janiyaNIMA", email = "janidunimsarabro@gmail.com" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "flask>=3.0.0",
+    "flask-sqlalchemy>=3.1.0",
+    "flask-cors>=4.0.0",
+    "flask-jwt-extended>=4.6.0",
+    "psycopg2-binary>=2.9.9",
+    "scikit-learn>=1.4.0",
+    "python-dotenv>=1.0.0",
+    "reportlab>=4.1.0",
+    "gunicorn>=21.2.0"
+]
+
+[project.scripts]
+uninet = "uninet:main"
+
+[build-system]
+requires = ["uv_build>=0.11.30,<0.12.0"]
+build-backend = "uv_build"
