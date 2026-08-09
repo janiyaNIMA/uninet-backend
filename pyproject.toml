@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [
     { name = "janiyaNIMA", email = "janidunimsarabro@gmail.com" }
 ]
-requires-python = ">=3.14"
+requires-python = ">=3.11"
 dependencies = [
     "flask>=3.0.0",
     "flask-sqlalchemy>=3.1.0",
