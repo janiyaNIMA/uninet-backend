@@ -6,16 +6,20 @@ import json
 import os
 import sys
 
+from dotenv import load_dotenv
+
 # ── Add src to path ──────────────────────────────────────────────────────────
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
+
+# Load environment variables from .env when running the standalone seed script.
+load_dotenv(os.path.join(os.path.dirname(__file__), '.env'))
 
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 
-DATABASE_URL = os.environ.get(
-    "DATABASE_URL",
-    "postgresql://neondb_owner:npg_qZThrcsF1z8V@ep-blue-glade-aynluoah-pooler.c-5.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
-)
+DATABASE_URL = os.environ.get("DATABASE_URL")
+if not DATABASE_URL:
+    raise RuntimeError("DATABASE_URL environment variable is required for Neon PostgreSQL.")
 
 # psycopg2 needs the URL as-is; no dialect swap needed
 engine = create_engine(DATABASE_URL, pool_pre_ping=True, pool_recycle=300)
@@ -203,11 +207,13 @@ def seed():
 
     session = Session()
     try:
-        # 1. User
-        print("👤  Seeding user...")
+        # 1. Users
+        print("👤  Seeding users...")
+        from werkzeug.security import generate_password_hash
+
         user = User(
-            id=1, username="jane", email="jane@wusl.ac.lk",
-            password_hash="pbkdf2:sha256:260000$devpassword$",
+            id="U001", username="jane", email="jane@wusl.ac.lk",
+            password_hash=generate_password_hash("student123"),
             role="student", full_name="Jane Doe", phone="+94 77 123 4567",
             university="Wayamba University of Sri Lanka",
             faculty="Faculty of Applied Sciences",
@@ -220,18 +226,43 @@ def seed():
             public_profile_enabled=True
         )
         session.add(user)
-        session.flush()  # flush so user.id is available for FK references
+
+        leader = User(
+            id="U002", username="leader", email="leader@wusl.ac.lk",
+            password_hash=generate_password_hash("leader123"),
+            role="society_leader", full_name="Asel Perera", phone="+94 77 987 6543",
+            university="Wayamba University of Sri Lanka",
+            faculty="Faculty of Applied Sciences",
+            degree_stream="BSc (Hons) in Computer Science",
+            batch="Batch of 2022/23", badge_tier="Silver",
+            total_points=400, next_tier_points=600,
+            skills=json.dumps(["Leadership", "Project Management", "Public Speaking"]),
+            interests=json.dumps(["Smart Feed", "WIE Leadership"]),
+            academic_modules=json.dumps(["CS3102 - Web Engineering"]),
+            public_profile_enabled=True
+        )
+        session.add(leader)
+        session.flush()  # flush so users are available for FK references
 
         # 2. UserSettings
         print("⚙️   Seeding user settings...")
-        settings = UserSettings(
-            id=1, user_id=1,
+        settings_jane = UserSettings(
+            id=1, user_id="U001",
             email_notifications=True, in_app_alerts=True,
             recruitment_notifs=False, society_broadcasts=True,
             theme_mode="light", contrast_option="standard",
             privacy_public_profile=True
         )
-        session.add(settings)
+        session.add(settings_jane)
+
+        settings_leader = UserSettings(
+            id=2, user_id="U002",
+            email_notifications=True, in_app_alerts=True,
+            recruitment_notifs=True, society_broadcasts=True,
+            theme_mode="light", contrast_option="standard",
+            privacy_public_profile=True
+        )
+        session.add(settings_leader)
 
         # 3. Societies
         print("🏛   Seeding societies...")
@@ -268,6 +299,16 @@ def seed():
         print("📢  Seeding recruitment drives...")
         for d in MOCK_DRIVES:
             session.add(RecruitmentDrive(**d))
+
+        session.flush()
+
+        # Reset serial sequences in PostgreSQL to prevent IntegrityErrors on new inserts
+        print("🔄  Resetting PostgreSQL sequences...")
+        for table_name in ['users', 'user_settings', 'societies', 'wie_mentors', 'events', 'badges', 'resume_activities', 'recruitment_candidates', 'recruitment_drives']:
+            try:
+                session.execute(text(f"SELECT setval(pg_get_serial_sequence('{table_name}', 'id'), coalesce(max(id), 1)) FROM {table_name}"))
+            except Exception as seq_err:
+                print(f"      Warning: Could not reset sequence for {table_name}: {seq_err}")
 
         session.commit()
         print("\n✅  UniNet database successfully seeded with all mock data!")

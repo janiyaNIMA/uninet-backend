@@ -1,14 +1,26 @@
 from flask import Blueprint, jsonify, request
-from src.uninet.models import db, UserSettings
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from src.uninet.models import db, UserSettings, User
 
 settings_bp = Blueprint('settings', __name__)
 
+
+def _get_user(username):
+    return User.query.filter_by(username=username).first()
+
+
 @settings_bp.route('', methods=['GET'])
 @settings_bp.route('/', methods=['GET'])
+@jwt_required()
 def get_settings():
-    s = UserSettings.query.filter_by(user_id=1).first()
+    username = get_jwt_identity()
+    user = _get_user(username)
+    if not user:
+        return jsonify({"status": "error", "message": "User not found"}), 404
+
+    s = UserSettings.query.filter_by(user_id=user.id).first()
     if not s:
-        s = UserSettings(user_id=1)
+        s = UserSettings(user_id=user.id)
         db.session.add(s)
         db.session.commit()
 
@@ -17,13 +29,20 @@ def get_settings():
         "settings": s.to_dict()
     })
 
+
 @settings_bp.route('', methods=['PUT'])
 @settings_bp.route('/', methods=['PUT'])
+@jwt_required()
 def update_settings():
+    username = get_jwt_identity()
+    user = _get_user(username)
+    if not user:
+        return jsonify({"status": "error", "message": "User not found"}), 404
+
     data = request.get_json() or {}
-    s = UserSettings.query.filter_by(user_id=1).first()
+    s = UserSettings.query.filter_by(user_id=user.id).first()
     if not s:
-        s = UserSettings(user_id=1)
+        s = UserSettings(user_id=user.id)
         db.session.add(s)
 
     notifs = data.get("notifications", {})

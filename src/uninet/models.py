@@ -7,10 +7,10 @@ db = SQLAlchemy()
 class User(db.Model):
     __tablename__ = 'users'
     
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(10), primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(256), nullable=False)
+    password_hash = db.Column(db.String(256), nullable=True)
     role = db.Column(db.String(20), default='student') # student, excom, admin
     full_name = db.Column(db.String(120), default='Jane Doe')
     phone = db.Column(db.String(50), default='+94 77 123 4567')
@@ -56,7 +56,7 @@ class User(db.Model):
 class Society(db.Model):
     __tablename__ = 'societies'
     
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(10), primary_key=True)
     name = db.Column(db.String(120), nullable=False)
     short_name = db.Column(db.String(50))
     category = db.Column(db.String(50))
@@ -96,8 +96,8 @@ class SocietyApplication(db.Model):
     __tablename__ = 'society_applications'
 
     id = db.Column(db.Integer, primary_key=True)
-    society_id = db.Column(db.Integer, db.ForeignKey('societies.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    society_id = db.Column(db.String(10), db.ForeignKey('societies.id'), nullable=False)
+    user_id = db.Column(db.String(10), db.ForeignKey('users.id'), nullable=True)
     applicant_name = db.Column(db.String(120))
     applicant_email = db.Column(db.String(120))
     status = db.Column(db.String(30), default='Pending')
@@ -140,7 +140,7 @@ class Event(db.Model):
     image = db.Column(db.String(255))
     tags = db.Column(db.String(255)) # comma-separated tags
     description = db.Column(db.Text)
-    society_id = db.Column(db.Integer, db.ForeignKey('societies.id'), nullable=True)
+    society_id = db.Column(db.String(10), db.ForeignKey('societies.id'), nullable=True)
     location = db.Column(db.String(120))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -165,7 +165,7 @@ class EventRegistration(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     event_id = db.Column(db.Integer, db.ForeignKey('events.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    user_id = db.Column(db.String(10), db.ForeignKey('users.id'), nullable=True)
     registration_code = db.Column(db.String(50), nullable=False)
     registered_at = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -173,7 +173,7 @@ class Badge(db.Model):
     __tablename__ = 'badges'
     
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    user_id = db.Column(db.String(10), db.ForeignKey('users.id'), nullable=True)
     title = db.Column(db.String(100), nullable=False)
     category = db.Column(db.String(50))
     tier = db.Column(db.String(30), default='Gold')
@@ -201,7 +201,7 @@ class ResumeActivity(db.Model):
     __tablename__ = 'resume_activities'
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    user_id = db.Column(db.String(10), db.ForeignKey('users.id'), nullable=True)
     role = db.Column(db.String(150), nullable=False)
     organization = db.Column(db.String(150), nullable=False)
     event = db.Column(db.String(150))
@@ -288,7 +288,7 @@ class UserSettings(db.Model):
     __tablename__ = 'user_settings'
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    user_id = db.Column(db.String(10), db.ForeignKey('users.id'), nullable=True)
     email_notifications = db.Column(db.Boolean, default=True)
     in_app_alerts = db.Column(db.Boolean, default=True)
     recruitment_notifs = db.Column(db.Boolean, default=False)

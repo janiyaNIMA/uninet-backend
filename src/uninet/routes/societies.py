@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
-from src.uninet.models import db, Society, WIEMentor, SocietyApplication
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from src.uninet.models import db, Society, WIEMentor, SocietyApplication, User
 
 societies_bp = Blueprint('societies', __name__)
 
@@ -31,16 +32,21 @@ def get_societies():
         }
     })
 
-@societies_bp.route('/<int:society_id>/apply', methods=['POST'])
+
+@societies_bp.route('/<society_id>/apply', methods=['POST'])
+@jwt_required()
 def apply_society(society_id):
+    username = get_jwt_identity()
+    user = User.query.filter_by(username=username).first()
     society = Society.query.get(society_id)
-    name = society.name if society else "Society"
+    if not society:
+        return jsonify({"success": False, "message": "Society not found"}), 404
 
     app_rec = SocietyApplication(
         society_id=society_id,
-        user_id=1,
-        applicant_name="Jane Doe",
-        applicant_email="jane@wusl.ac.lk",
+        user_id=user.id if user else None,
+        applicant_name=user.full_name if user else "Anonymous",
+        applicant_email=user.email if user else "",
         status="Pending"
     )
     db.session.add(app_rec)
@@ -48,6 +54,6 @@ def apply_society(society_id):
 
     return jsonify({
         "success": True,
-        "message": f"Application sent to {name}!"
+        "message": f"Application sent to {society.name}!"
     })
 

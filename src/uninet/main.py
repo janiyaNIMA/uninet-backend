@@ -44,16 +44,9 @@ def create_app(config_class=Config):
     def health_check():
         return {"status": "ok", "service": "uninet-backend"}
 
-    # Auto-initialize database tables and seed data if missing
+    # Ensure all Neon PostgreSQL tables exist (data seeded via run_seed.py)
     with app.app_context():
         db.create_all()
-        try:
-            from src.uninet.models import Event
-            if Event.query.count() == 0:
-                from src.uninet.seed import seed_database
-                seed_database()
-        except Exception as e:
-            print(f"Warning: Auto-seeding skipped or failed: {e}")
 
     return app
 

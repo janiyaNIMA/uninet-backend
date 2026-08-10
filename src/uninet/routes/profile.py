@@ -1,33 +1,37 @@
 import json
 from flask import Blueprint, jsonify, request
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from src.uninet.models import db, User
 
 profile_bp = Blueprint('profile', __name__)
 
+
+def _get_profile(username):
+    return User.query.filter_by(username=username).first()
+
+
 @profile_bp.route('', methods=['GET'])
 @profile_bp.route('/', methods=['GET'])
+@jwt_required()
 def get_profile():
-    user = User.query.get(1)
+    username = get_jwt_identity()
+    user = _get_profile(username)
     if not user:
-        user = User(
-            id=1,
-            username="jane",
-            email="jane@wusl.ac.lk",
-            full_name="Jane Doe"
-        )
-        db.session.add(user)
-        db.session.commit()
+        return jsonify({"success": False, "message": "User not found"}), 404
 
     return jsonify({
         "success": True,
         "data": user.to_dict()
     })
 
+
 @profile_bp.route('/tags', methods=['PUT'])
 @profile_bp.route('/', methods=['PUT'])
+@jwt_required()
 def update_profile():
     data = request.get_json() or {}
-    user = User.query.get(1)
+    username = get_jwt_identity()
+    user = _get_profile(username)
     if not user:
         return jsonify({"success": False, "message": "User not found"}), 404
 

@@ -1,11 +1,13 @@
 from flask import Blueprint, jsonify, request
 from src.uninet.models import db, Event, EventRegistration, User
+from src.uninet.utils.auth_guards import jwt_required_role
 
 analytics_bp = Blueprint('analytics', __name__)
 
 @analytics_bp.route('/dashboard', methods=['GET'])
 @analytics_bp.route('', methods=['GET'])
 @analytics_bp.route('/', methods=['GET'])
+@jwt_required_role('society_leader')
 def get_analytics_dashboard():
     events = Event.query.all()
     registration_attendance = []

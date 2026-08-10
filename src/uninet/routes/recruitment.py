@@ -1,9 +1,11 @@
 from flask import Blueprint, jsonify, request
 from src.uninet.models import db, RecruitmentCandidate, RecruitmentDrive
+from src.uninet.utils.auth_guards import jwt_required_role
 
 recruitment_bp = Blueprint('recruitment', __name__)
 
 @recruitment_bp.route('/candidates', methods=['GET'])
+@jwt_required_role('society_leader')
 def get_candidates():
     candidates = [c.to_dict() for c in RecruitmentCandidate.query.all()]
     return jsonify({
@@ -12,6 +14,7 @@ def get_candidates():
     })
 
 @recruitment_bp.route('/candidates/<int:candidate_id>/dispatch-invite', methods=['POST'])
+@jwt_required_role('society_leader')
 def dispatch_invite(candidate_id):
     candidate = RecruitmentCandidate.query.get(candidate_id)
     if candidate:
@@ -26,6 +29,7 @@ def dispatch_invite(candidate_id):
     return jsonify({"success": False, "message": "Candidate not found"}), 404
 
 @recruitment_bp.route('/drives', methods=['GET'])
+@jwt_required_role('society_leader')
 def get_drives():
     drives = [d.to_dict() for d in RecruitmentDrive.query.all()]
     return jsonify({
@@ -34,6 +38,7 @@ def get_drives():
     })
 
 @recruitment_bp.route('/drives', methods=['POST'])
+@jwt_required_role('society_leader')
 def create_drive():
     data = request.get_json() or {}
     drive = RecruitmentDrive(
@@ -51,6 +56,7 @@ def create_drive():
     }), 201
 
 @recruitment_bp.route('/drives/<int:drive_id>', methods=['DELETE'])
+@jwt_required_role('society_leader')
 def delete_drive(drive_id):
     drive = RecruitmentDrive.query.get(drive_id)
     if drive:

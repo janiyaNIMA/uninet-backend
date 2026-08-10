@@ -1,9 +1,11 @@
 from flask import Blueprint, jsonify, request
 from src.uninet.models import db, Society, Event, EventRegistration, RecruitmentCandidate
+from src.uninet.utils.auth_guards import jwt_required_role
 
 excom_bp = Blueprint('excom', __name__)
 
 @excom_bp.route('/dashboard', methods=['GET'])
+@jwt_required_role('society_leader')
 def dashboard():
     society = Society.query.first()
     member_count = society.member_count if society else 120
@@ -21,6 +23,7 @@ def dashboard():
     })
 
 @excom_bp.route('/events', methods=['POST'])
+@jwt_required_role('society_leader')
 def post_event():
     data = request.get_json() or {}
     title = data.get("title", "New Community Event")
@@ -41,7 +44,7 @@ def post_event():
         image="https://picsum.photos/seed/event/400/200",
         tags=skills_str or "Technology,Campus",
         description=description,
-        society_id=1
+        society_id="S001"
     )
     db.session.add(new_event)
     db.session.commit()
