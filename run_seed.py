@@ -133,14 +133,22 @@ MOCK_BADGES = [
 ]
 
 MOCK_RESUME_ACTIVITIES = [
-  {"id": 1, "role": "Lead Organiser & Student Lead", "organization": "IEEE Student Branch Chapter",
+  {"id": 1, "user_id": "U001", "role": "Lead Organiser & Student Lead", "organization": "IEEE Student Branch Chapter",
    "event": "HackElite 2025 Hackathon", "category": "Leadership & Management", "period": "Mar 2025 – May 2025", "verified": True},
-  {"id": 2, "role": "Participant & Runner-Up", "organization": "IEEE Computer Society",
+  {"id": 2, "user_id": "U001", "role": "Participant & Runner-Up", "organization": "IEEE Computer Society",
    "event": "Cloud Computing Sprint", "category": "Technical Skill", "period": "Jun 2026", "verified": True},
-  {"id": 3, "role": "WIE Ambassador", "organization": "IEEE Women in Engineering",
+  {"id": 3, "user_id": "U001", "role": "WIE Ambassador", "organization": "IEEE Women in Engineering",
    "event": "STEM Outreach Programme", "category": "Community & Mentorship", "period": "Jul 2026", "verified": True},
-  {"id": 4, "role": "Sub-Committee Member", "organization": "Entrepreneurship Club",
+  {"id": 4, "user_id": "U001", "role": "Sub-Committee Member", "organization": "Entrepreneurship Club",
    "event": "Pitch Night Vol. 3", "category": "Business & Soft Skills", "period": "Jan 2026", "verified": True},
+  {"id": 5, "user_id": "U002", "role": "Chairperson & Head Organiser", "organization": "Computing & Information Systems Society",
+   "event": "CMIS CodeSprint 2025", "category": "Leadership & Management", "period": "Feb 2025 – Apr 2025", "verified": True},
+  {"id": 6, "user_id": "U002", "role": "Technical Lead & Speaker", "organization": "IEEE Student Branch Chapter",
+   "event": "Web Architecture & API Masterclass", "category": "Technical Skill", "period": "Oct 2025", "verified": True},
+  {"id": 7, "user_id": "U002", "role": "Event Coordinator", "organization": "Sports Council",
+   "event": "Annual Inter-Faculty Sports Meet 2025", "category": "Sports & Event Ops", "period": "Aug 2025", "verified": True},
+  {"id": 8, "user_id": "U002", "role": "Active Debate Participant", "organization": "Gavel Club",
+   "event": "SpeechCraft 2025 Public Speaking Series", "category": "Public Speaking & Communication", "period": "Nov 2025", "verified": True},
 ]
 
 MOCK_CANDIDATES = [
@@ -288,7 +296,7 @@ def seed():
         # 7. Resume Activities
         print("📄  Seeding resume activities...")
         for a in MOCK_RESUME_ACTIVITIES:
-            session.add(ResumeActivity(user_id=1, **a))
+            session.add(ResumeActivity(**a))
 
         # 8. Recruitment Candidates
         print("🔍  Seeding recruitment candidates...")
