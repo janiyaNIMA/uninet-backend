@@ -115,22 +115,29 @@ MOCK_BADGES = [
   {"id": 1, "title": "Hackathon Hero", "category": "Innovation", "tier": "Gold",
    "unlocked": True, "points": 150, "earned_date": "2026-05-12", "icon": "🏆",
    "description": "Participated and placed in top 3 in HackElite 2025."},
-  {"id": 2, "title": "Cloud Specialist", "category": "Technical", "tier": "Silver",
-   "unlocked": True, "points": 100, "earned_date": "2026-06-20", "icon": "☁️",
-   "description": "Completed IEEE CS Cloud Computing workshop series."},
-  {"id": 3, "title": "WIE Trailblazer", "category": "Leadership", "tier": "Gold",
-   "unlocked": True, "points": 200, "earned_date": "2026-07-04", "icon": "🌟",
-   "description": "Led outreach initiative for female undergraduates in STEM."},
-  {"id": 4, "title": "Open Source Contributor", "category": "Community", "tier": "Bronze",
-   "unlocked": True, "points": 80, "earned_date": "2026-07-18", "icon": "💻",
-   "description": "Submitted 3+ merged PRs during FOSS Hacktoberfest."},
-  {"id": 5, "title": "Event Coordinator", "category": "Management", "tier": "Platinum",
-   "unlocked": False, "points": 250, "earned_date": None, "icon": "📋",
-   "description": "Organise 5 major campus events as ExCom or OC lead."},
-  {"id": 6, "title": "Master Mentor", "category": "Mentorship", "tier": "Platinum",
-   "unlocked": False, "points": 300, "earned_date": None, "icon": "🎓",
-   "description": "Complete 20 hours of peer or junior student mentorship."},
+  {"id": 2, "title": "Code Sprint Veteran", "category": "Technical", "tier": "Silver",
+   "unlocked": True, "points": 100, "earned_date": "2026-06-20", "icon": "💻",
+   "description": "Attended 3+ technical coding workshops (CMIS / IEEE / Electronic Society)."},
+  {"id": 3, "title": "WIE Champion", "category": "Inclusivity", "tier": "Gold",
+   "unlocked": True, "points": 120, "earned_date": "2026-07-04", "icon": "💜",
+   "description": "Active participation in IEEE WIE affinity group workshops or mentorship programs."},
+  {"id": 4, "title": "Lens Master", "category": "Creative", "tier": "Bronze",
+   "unlocked": True, "points": 50, "earned_date": "2026-07-18", "icon": "📸",
+   "description": "Contributed media coverage for a campus event via WireScope Photography."},
+  {"id": 5, "title": "Tactical Mind", "category": "Sports", "tier": "Bronze",
+   "unlocked": False, "points": 50, "earned_date": None, "icon": "♟️",
+   "description": "Participated in university chess tournaments or inter-faculty board meets."},
+  {"id": 6, "title": "Eco Warrior", "category": "Community", "tier": "Bronze",
+   "unlocked": False, "points": 50, "earned_date": None, "icon": "🌿",
+   "description": "Participated in ESOC environmental sustainability or green campus initiatives."},
+  {"id": 7, "title": "Orator Mastery", "category": "Leadership", "tier": "Silver",
+   "unlocked": False, "points": 90, "earned_date": None, "icon": "🎙️",
+   "description": "Delivered a speech or completed a module in Gavel Club public speaking drives."},
+  {"id": 8, "title": "Lead Organizer", "category": "Management", "tier": "Platinum",
+   "unlocked": False, "points": 200, "earned_date": None, "icon": "👑",
+   "description": "Served as an Organizing Committee (OC) lead for a major university event."}
 ]
+
 
 MOCK_RESUME_ACTIVITIES = [
   {"id": 1, "user_id": "U001", "role": "Lead Organiser & Student Lead", "organization": "IEEE Student Branch Chapter",
@@ -291,7 +298,8 @@ def seed():
         # 6. Badges (requires user to exist — flushed above)
         print("🏆  Seeding badges...")
         for b in MOCK_BADGES:
-            session.add(Badge(user_id=1, **b))
+            session.add(Badge(user_id="U001", **b))
+
 
         # 7. Resume Activities
         print("📄  Seeding resume activities...")
